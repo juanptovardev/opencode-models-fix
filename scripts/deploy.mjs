@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 // deploy.mjs — copia el plugin a .config/opencode/plugins con backup previo.
 // Uso: bun scripts/deploy.mjs   (o: node scripts/deploy.mjs)
+//
+// SOLO server: models-fix.ts + classifier.ts + ledger.ts.
+// El TUI (models-fix-tui.ts) NO se despliega: un fichero solo-TUI en plugins/
+// hace fallar el boot del server ("must default export server()", igual que
+// history.ts). Se resuelve en el issue #7 antes de desplegarlo.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -16,15 +21,16 @@ const CONFIG_TEMPLATE = path.join(ROOT, "config", "models-fix.json");
 const TS = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 const stamp = `modelsfix-${TS}`;
 
+// Bundle del server. Orden irrelevante (imports relativos entre ellos).
+const files = ["models-fix.ts", "classifier.ts", "ledger.ts"];
+// models-fix-tui.ts: EXCLUIDO a proposito (ver cabecera).
+
 function backup(p) {
   if (!fs.existsSync(p)) return null;
   const dst = `${p}.bak-${stamp}`;
   fs.copyFileSync(p, dst);
   return dst;
 }
-
-const files = ["models-fix.ts", "models-fix-tui.ts"];
-const deploy = [];
 
 for (const f of files) {
   const from = path.join(SRC, f);
@@ -37,7 +43,6 @@ for (const f of files) {
   if (bk) console.log(`[deploy] backup: ${bk}`);
   fs.mkdirSync(PLUGINS, { recursive: true });
   fs.copyFileSync(from, to);
-  deploy.push(to);
   console.log(`[deploy] instalado: ${to}`);
 }
 

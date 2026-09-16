@@ -8,6 +8,7 @@
 // -> el TUI pregunta al usuario (o auto-reintenta 1 vez el primer fallback).
 
 import type { Plugin } from "@opencode-ai/plugin";
+import fs from "node:fs";
 import { classify, shortLabel } from "./classifier.js";
 import {
   withLedger,
@@ -65,7 +66,6 @@ function loadConfig(): Config {
 
 function readJsonSafe(p: string): any {
   try {
-    const fs = require("node:fs");
     let t = fs.readFileSync(p, "utf-8");
     if (t.charCodeAt(0) === 0xfeff) t = t.slice(1);
     return JSON.parse(t);
@@ -101,7 +101,7 @@ function rankFallbacks(cfg: Config): Array<{ providerID: string; modelID: string
   // 2) kiosapi-efforts.json: ok > ok_flaky > recovered_pending
   try {
     const eff = readJsonSafe(
-      `${process.env.USERPROFILE}\\config\\opencode\\kiosapi-efforts.json`,
+      `${process.env.USERPROFILE}\\.config\\opencode\\kiosapi-efforts.json`,
     );
     const models = eff?.models ?? {};
     const order = { ok: 0, ok_flaky: 1, recovered_pending: 2 };

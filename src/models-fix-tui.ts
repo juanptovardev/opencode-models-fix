@@ -14,7 +14,7 @@ import {
   ledgerKey,
   hashPrompt,
   MAX_AUTO_RETRIES,
-} from "../src/ledger.js";
+} from "./ledger.js";
 
 const TAG = "[models-fix-tui]";
 
@@ -51,7 +51,7 @@ const tui: TuiPlugin = async (api: any) => {
     // El gasto real ocurre en el server via withLedger; el TUI no puede
     // escribir bajo lock sin serializar. Se invoca al modulo compartido.
     try {
-      const { withLedger } = await import("../src/ledger.js");
+      const { withLedger } = await import("./ledger.js");
       await withLedger((state: any) => {
         spendAutoRetry(state, ledgerKey(req.providerID, req.modelID), req.promptHash);
       });
