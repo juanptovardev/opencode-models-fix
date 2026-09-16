@@ -217,9 +217,9 @@ creciendo sin reestructurar. Reglas:
 ## 11. Estado
 
 - [x] Plan maestro + decisiones (§0)
-- [ ] Repo GitHub + issues #1–#10 + milestones + CI (este turno)
-- [ ] `v0.1` classifier + ledger + tests
-- [ ] `v0.2` guardias G1/G2/G3
-- [ ] `v0.3` server handler + buzón + TUI modal
+- [x] Repo GitHub (https://github.com/juanptovardev/opencode-models-fix) + issues #1–#10 + labels + milestones + CI en verde (2026-09-16)
+- [x] `v0.1` classifier + ledger + tests (34/34, typecheck limpio) — commiteado
+- [ ] `v0.2` guardias G1/G2/G3 (G1 activo; G2/G3 esqueleto → `chat.params`)
+- [ ] `v0.3` server handler + buzón + TUI modal (código escrito, sin deploy)
 - [ ] `v0.4` colaterales (shim, history.ts, small_model, validator-pause)
 - [ ] `v1.0` estable
