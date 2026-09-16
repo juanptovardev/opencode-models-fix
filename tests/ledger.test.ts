@@ -93,7 +93,11 @@ describe("ledger (logica pura sobre estado en memoria)", () => {
 describe("ledger (disco, aislado a temp)", () => {
   test("withLedger persiste y reléè estado", async () => {
     // Aislar del runtime real (C:\opengo-bridge\opencode-sync).
-    const tmp = `${require("node:os").tmpdir()}\\models-fix-test-${Date.now()}`;
+    // path.join: portable Windows/Linux (el backslash hardcodeado rompia CI).
+    const tmp = require("node:path").join(
+      require("node:os").tmpdir(),
+      `models-fix-test-${Date.now()}`,
+    );
     require("node:fs").mkdirSync(tmp, { recursive: true });
     process.env.MODELS_FIX_SYNC_DIR = tmp;
 
