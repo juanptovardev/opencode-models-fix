@@ -1,6 +1,6 @@
 {
   "name": "opencode-models-fix",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Gestion unificada de fallos de modelos para OpenCode (kiosapi + nvidia + opencode)",
   "type": "module",
   "scripts": {

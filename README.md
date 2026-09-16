@@ -15,6 +15,14 @@ de modelos de **todos** los providers (kiosapi + nvidia + opencode).
 
 Estado y plan completo: [`PLAN.md`](PLAN.md).
 
+> **Notas del deploy (v0.1.1):**
+> - Solo server: `models-fix.ts` + `classifier.ts` + `ledger.ts` (+ plantilla de config).
+> - El TUI (`models-fix-tui.ts`) queda en el repo **sin desplegar**: un fichero
+>   solo-TUI en `plugins/` rompe el boot (issue #7).
+> - Config opcional en `~/.config/opencode/models-fix.json`: lo que declara pisa
+>   defaults; lo demás vive en el código.
+> - Runtime state en `C:\opengo-bridge\opencode-sync\models-fix-state.json`.
+
 ## Instalación (cuando un milestone lo indique)
 
 ```powershell

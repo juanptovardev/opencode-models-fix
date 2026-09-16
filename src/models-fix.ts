@@ -39,9 +39,10 @@ interface Config {
   fallbackChains: Record<string, string[]>;
 }
 
+const CONFIG_PATH = `${process.env.USERPROFILE ?? ""}\\.config\\opencode\\models-fix.json`;
+
 function loadConfig(): Config {
-  // Defaults en codigo; .config/opencode/models-fix.json es opcional.
-  return {
+  const defaults: Config = {
     modalTimeoutMs: 90_000,
     g1: true,
     g2: true,
@@ -59,6 +60,32 @@ function loadConfig(): Config {
       "opencode/gpt-5.4-nano": 65536,
     },
     fallbackChains: {},
+  };
+  // La config en disco es opcional y solo lo que declara pisa defaults.
+  const f = readJsonSafe(CONFIG_PATH);
+  const clean = f ?? {};
+  for (const key of Object.keys(clean)) {
+    if (key.startsWith("$")) delete (clean as any)[key];
+  }
+  return {
+    ...defaults,
+    ...clean,
+    modalTimeoutMs:
+      typeof clean?.modal?.timeoutMs === "number" ? clean.modal.timeoutMs : defaults.modalTimeoutMs,
+    g1: typeof clean?.guards?.g1CallIdDedupe === "boolean" ? clean.guards.g1CallIdDedupe : defaults.g1,
+    g2: typeof clean?.guards?.g2StripStaleReasoning === "boolean" ? clean.guards.g2StripStaleReasoning : defaults.g2,
+    g3: typeof clean?.guards?.g3ContextGuard === "boolean" ? clean.guards.g3ContextGuard : defaults.g3,
+    g3Ratio:
+      typeof clean?.guards?.g3ContextSafetyRatio === "number"
+        ? clean.guards.g3ContextSafetyRatio
+        : defaults.g3Ratio,
+    windowSize: typeof clean?.window?.size === "number" ? clean.window.size : defaults.windowSize,
+    fallbackAfterFails:
+      typeof clean?.window?.fallbackAfterFails === "number"
+        ? clean.window.fallbackAfterFails
+        : defaults.fallbackAfterFails,
+    contextCaps: { ...defaults.contextCaps, ...(clean?.contextCaps ?? {}) },
+    fallbackChains: { ...defaults.fallbackChains, ...(clean?.fallbackChains ?? {}) },
   };
 }
 
@@ -168,12 +195,23 @@ export const ModelsFix: Plugin = async (ctx) => {
   const agentBySession = new Map<string, string>();
   // ultimo prompt por sesion (snapshot para re-prompt)
   const lastPrompt = new Map<string, string>();
-  // guard in-flight: una sesion no genera multiples modales
-  const inFlight = new Set<string>();
+  // guard in-flight por sesion con expiracion (nunca mute permanente):
+  // un error -> un modal; si vuelve a fallar pasados 3 min, puede re-abrir.
+  const INFLIGHT_TTL_MS = 3 * 60_000;
+  const inflightSince = new Map<string, number>();
+  const inFlight = (sessionID: string): boolean => {
+    const t = inflightSince.get(sessionID);
+    if (t === undefined) return false;
+    if (Date.now() - t > INFLIGHT_TTL_MS) {
+      inflightSince.delete(sessionID);
+      return false;
+    }
+    return true;
+  };
 
   const toast = (title: string, message: string, variant: any = "warning") => {
     try {
-      client?.app?.toast?.({ body: { title, message, variant } });
+      client?.tui?.showToast?.({ body: { title, message, variant } });
     } catch {}
   };
 
@@ -260,7 +298,7 @@ export const ModelsFix: Plugin = async (ctx) => {
       const sessionID = props.sessionID;
       const err = props.error;
       if (!sessionID || !err) return;
-      if (inFlight.has(sessionID)) return; // un modal a la vez
+      if (inFlight(sessionID)) return; // un modal a la vez (con expiracion)
 
       const msg = typeof err === "string" ? err : err?.message ?? JSON.stringify(err);
       const providerID = err?.providerID ?? "unknown";
@@ -307,7 +345,7 @@ export const ModelsFix: Plugin = async (ctx) => {
         };
 
         void writeRetry(req).then(async () => {
-          inFlight.add(sessionID);
+          inflightSince.set(sessionID, Date.now());
           if (autoEligible && candidates.length > 0) {
             // el TUI hace la pregunta; si expira, auto-reintenta el #1.
             // El gasto del auto-retry lo marca el TUI al dispararlo.

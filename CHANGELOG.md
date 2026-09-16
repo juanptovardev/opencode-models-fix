@@ -2,6 +2,15 @@
 
 Formato: `## [vX.Y] - fecha` + lista por issue.
 
+## [v0.1.1] - 2026-09-16 (pulido)
+
+- Fix: guard in-flight con expiración (3 min) — antes silenciaba la sesión para siempre.
+- Fix: `loadConfig` ahora lee `~/.config/opencode/models-fix.json` (antes era decorativa).
+- Fix: toast usa `client.tui.showToast` (el API correcto del SDK, patrón nvidia-brute).
+- Fix: rankFallbacks — path `.config` correcto y campo `state` verificado contra el ledger real.
+- Fix: deploy portable (`fileURLToPath` + dirname doble, dobles correcciones) y solo-server.
+- Docs: README con notas de deploy; plantilla config cubre overrides.
+
 ## [Unreleased]
 
 - Plan maestro (`PLAN.md`), scaffolding del repo, CI base, catálogo de errores.
