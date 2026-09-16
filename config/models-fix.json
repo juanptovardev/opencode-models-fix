@@ -1,0 +1,50 @@
+{
+  "$comment": "Plantilla de configuracion de models-fix. Copiar a .config/opencode/models-fix.json. Todos los valores son opcionales: si falta, se usa el default del codigo.",
+  "modal": {
+    "timeoutMs": 90000,
+    "$comment_timeout": "Timeout del modal. Al expirar: 1 solo auto-reintento del primer candidato. Si ese falla, espera indefinida."
+  },
+  "guards": {
+    "g1CallIdDedupe": true,
+    "g2StripStaleReasoning": true,
+    "g3ContextGuard": true,
+    "g3ContextSafetyRatio": 0.9,
+    "$comment_g3": "Si tokens_estimados > cap * ratio, no se envia el request condenado."
+  },
+  "window": {
+    "size": 5,
+    "ms": 900000,
+    "fallbackAfterFails": 3
+  },
+  "quarantine": {
+    "capMs": 21600000,
+    "rateLadderMs": [2000, 4000, 8000, 15000, 30000]
+  },
+  "contextCaps": {
+    "$comment": "Caps de contexto por provider/model. kiosapi se lee de kiosapi-efforts.json; esto cubre nvidia/opencode y overrides.",
+    "kiosapi/atria-dawn-preview": 131072,
+    "kiosapi/hy3": 131072,
+    "kiosapi/qwen3.8-flash": 262144,
+    "kiosapi/glm-5.3-flash": 262144,
+    "kiosapi/muse-spark-1.3-contributor": 262144,
+    "opencode/muse-spark-1.3-contributor-free": 262144,
+    "opencode/gpt-5.4-nano": 65536
+  },
+  "fallbackChains": {
+    "$comment": "Cadenas manuales. Si esta vacio, se usa el ranking automatico (kiosapi-efforts.json + nvidia-brute-state.json).",
+    "kiosapi/glm-5.3-flash": ["kiosapi/qwen3.8-flash", "kiosapi/kimi-k3"],
+    "kiosapi/qwen3.8-flash": ["kiosapi/glm-5.3-flash", "kiosapi/kimi-k3"]
+  },
+  "validatorPause": {
+    "enabled": true,
+    "$comment": "Si hay cuarentenas activas, kiosapi-sync salta su --auto (evita colisionar rate-limits)."
+  },
+  "profiles": {
+    "$comment": "FASE 2 (no implementado). Preconfiguracion por tarea/complejidad con preguntas al usuario.",
+    "quick": {},
+    "standard": {},
+    "heavy": {},
+    "code": {},
+    "research": {}
+  }
+}

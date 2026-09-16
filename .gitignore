@@ -1,0 +1,14 @@
+node_modules/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+# Runtime del plugin (vive en C:\opengo-bridge\opencode-sync, nunca en el repo)
+models-fix-state.json
+models-fix.lock
+models-fix-retry.json
+# Backups de deploy
+*.bak-modelsfix
+# Secretos: las API keys viven en opencode.json, JAMÁS aquí
+.env
+*.key

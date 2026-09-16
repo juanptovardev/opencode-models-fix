@@ -1,0 +1,39 @@
+name: Fallo de modelo
+description: Reportar un fallo nuevo visto en opencode.log
+title: "[firma] "
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: log
+    attributes:
+      label: Línea del log (stream error)
+      description: Pega la línea completa de opencode.log
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: provider-model
+    attributes:
+      label: Provider / modelo
+      placeholder: kiosapi/glm-5.3-flash
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Componente sospechoso
+      options:
+        - area:classifier
+        - area:ledger
+        - area:guards
+        - area:server
+        - area:tui
+    validations:
+      required: true
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto
+      description: Qué hacías, tamaño aprox. de la sesión, agente activo
+    validations:
+      required: false
