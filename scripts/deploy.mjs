@@ -10,11 +10,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
+import { fileURLToPath } from "node:url";
 
 const HOME = os.homedir();
 const PLUGINS = path.join(HOME, ".config", "opencode", "plugins");
 const CONFIG_DIR = path.join(HOME, ".config", "opencode");
-const ROOT = path.resolve(new URL("..", import.meta.url).pathname.replace(/^\//, ""));
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
 const CONFIG_TEMPLATE = path.join(ROOT, "config", "models-fix.json");
 
