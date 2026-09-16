@@ -98,13 +98,13 @@ const RULES: Rule[] = [
     cls: "conn-refused",
     advice: "same",
     quarantineMs: 30_000,
-    re: /Unable to connect|typo in the url|socket connection was closed/i,
+    re: /Unable to connect|typo in the url|socket connection was closed|Invalid URL \(/i,
   },
   {
     cls: "gateway-timeout",
     advice: "same",
     quarantineMs: 60_000,
-    re: /Gateway Timeout|Bad Gateway|ProviderHeaderTimeout|temporarily overloaded|^<none>$/i,
+    re: /Gateway Timeout|Bad Gateway|ProviderHeaderTimeout|temporarily overloaded|\s<none>\s*$|:\s*<none>/i,
   },
 ];
 

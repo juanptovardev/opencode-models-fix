@@ -47,7 +47,7 @@ export interface LedgerState {
   entries: Record<string, LedgerEntry>;
 }
 
-function key(providerID: string, modelID: string): string {
+export function ledgerKey(providerID: string, modelID: string): string {
   return `${providerID}/${modelID}`;
 }
 
@@ -287,4 +287,4 @@ export function hashPrompt(text: string): string {
   return `p${(h >>> 0).toString(36)}`;
 }
 
-export { key as ledgerKey, statePath, retryPath, WINDOW_SIZE, WINDOW_MS };
+export { statePath, retryPath, WINDOW_SIZE, WINDOW_MS, QUARANTINE_CAP_MS };

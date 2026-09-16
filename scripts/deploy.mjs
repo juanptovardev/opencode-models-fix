@@ -22,8 +22,11 @@ const CONFIG_TEMPLATE = path.join(ROOT, "config", "models-fix.json");
 const TS = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 const stamp = `modelsfix-${TS}`;
 
-// Bundle del server. Orden irrelevante (imports relativos entre ellos).
-const files = ["models-fix.ts", "classifier.ts", "ledger.ts"];
+// Bundle: un solo fichero (cada .ts en plugins/ es cargado como plugin y
+// debe default-exportar funcion; helpers sueltos rompen el boot — log real:
+// "Plugin export is not a function" para ledger.ts). Ver scripts/bundle.mjs.
+const files = ["models-fix.bundle.ts"];
+const deployAs = { "models-fix.bundle.ts": "models-fix.ts" };
 // models-fix-tui.ts: EXCLUIDO a proposito (ver cabecera).
 
 function backup(p) {
@@ -35,7 +38,7 @@ function backup(p) {
 
 for (const f of files) {
   const from = path.join(SRC, f);
-  const to = path.join(PLUGINS, f);
+  const to = path.join(PLUGINS, deployAs[f] ?? f);
   if (!fs.existsSync(from)) {
     console.error(`[deploy] falta fuente: ${from}`);
     process.exit(1);
@@ -45,6 +48,16 @@ for (const f of files) {
   fs.mkdirSync(PLUGINS, { recursive: true });
   fs.copyFileSync(from, to);
   console.log(`[deploy] instalado: ${to}`);
+}
+
+// Elimina helpers sueltos de un deploy anterior (rompen el boot).
+for (const stale of ["classifier.ts", "ledger.ts"]) {
+  const p = path.join(PLUGINS, stale);
+  if (fs.existsSync(p)) {
+    backup(p);
+    fs.unlinkSync(p);
+    console.log(`[deploy] eliminado helper suelto (rompia boot): ${p}`);
+  }
 }
 
 // config plantilla (solo si no existe)

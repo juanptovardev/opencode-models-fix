@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+﻿import { describe, expect, test } from "bun:test";
 import { classify } from "../src/classifier";
 import type { ErrorClass, Advice } from "../src/classifier";
 
@@ -48,7 +48,7 @@ const CASES: Array<{ name: string; msg: string; cls: ErrorClass; advice: Advice 
   },
   {
     name: "rate-429 chino 10/min (glm)",
-    msg: "AI_APICallError: 请求频率超限:1分钟内只能发送10条请求 (request id: 20260916041219)",
+    msg: "AI_APICallError: è¯·æ±‚é¢‘çŽ‡è¶…é™:1åˆ†é’Ÿå†…åªèƒ½å‘é€10æ¡è¯·æ±‚ (request id: 20260916041219)",
     cls: "rate-429",
     advice: "same",
   },
@@ -105,6 +105,18 @@ const CASES: Array<{ name: string; msg: string; cls: ErrorClass; advice: Advice 
     msg: 'AI_APICallError: [openai-compatible-chat-x/qwen3.8-flash] [400]: {"error":{"message":"openai_error","type":"invalid_request_error"}} (reset after 26s)',
     cls: "bad-request",
     advice: "fallback",
+  },
+  {
+    name: "gateway-timeout <none> (log real)",
+    msg: "AI_APICallError: <none>",
+    cls: "gateway-timeout",
+    advice: "same",
+  },
+  {
+    name: "conn-refused invalid url (log real)",
+    msg: "AI_APICallError: Invalid URL (GET /v1/chat/completions)",
+    cls: "conn-refused",
+    advice: "same",
   },
   {
     name: "unknown",

@@ -1,6 +1,6 @@
-// models-fix.ts — server plugin.
+﻿// models-fix.ts â€” server plugin.
 // Guardias pre-request (G1/G2/G3) + handler de session.error + ranking de
-// fallback + escritura del buzon para el TUI compañero.
+// fallback + escritura del buzon para el TUI compaÃ±ero.
 //
 // Limitacion del SDK (verificada en @opencode-ai/plugin/dist/index.d.ts):
 // no hay hook chat.error ni forma de cambiar el modelo sincronicamente. El
@@ -8,7 +8,7 @@
 // -> el TUI pregunta al usuario (o auto-reintenta 1 vez el primer fallback).
 
 import type { Plugin } from "@opencode-ai/plugin";
-import fs from "node:fs";
+import fsSync from "node:fs";
 import { classify, shortLabel } from "./classifier.js";
 import {
   withLedger,
@@ -93,7 +93,7 @@ function loadConfig(): Config {
 
 function readJsonSafe(p: string): any {
   try {
-    let t = fs.readFileSync(p, "utf-8");
+    let t = fsSync.readFileSync(p, "utf-8");
     if (t.charCodeAt(0) === 0xfeff) t = t.slice(1);
     return JSON.parse(t);
   } catch {
@@ -351,12 +351,12 @@ export const ModelsFix: Plugin = async (ctx) => {
             // El gasto del auto-retry lo marca el TUI al dispararlo.
             toast(
               "Models Fix",
-              `${k} → ${c.cls}. Elige modelo para reintentar (auto: ${candidates[0].providerID}/${candidates[0].modelID} en ${Math.round(cfg.modalTimeoutMs / 1000)}s).`,
+              `${k} â†’ ${c.cls}. Elige modelo para reintentar (auto: ${candidates[0].providerID}/${candidates[0].modelID} en ${Math.round(cfg.modalTimeoutMs / 1000)}s).`,
             );
           } else {
             toast(
               "Models Fix",
-              `${k} → ${c.cls}. Auto-reintento agotado para este prompt: elige modelo manualmente.`,
+              `${k} â†’ ${c.cls}. Auto-reintento agotado para este prompt: elige modelo manualmente.`,
               "error",
             );
           }
